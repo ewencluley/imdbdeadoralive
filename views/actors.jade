@@ -1,0 +1,27 @@
+extends layout
+
+block content
+    table
+        - each actor in actors
+            tr
+                td
+                    a(href="http://www.imdb.com/name/"+actor.id, id=actor.id)
+                        = actor.name
+                td(id=actor.id+"_status") Pending
+
+
+    script.
+        window.addEventListener('load', function(){
+            $('a').each(function(){
+                var id = this.id;
+                $.ajax({
+                    url: "actors/"+id
+                }).done(function (data) {
+                    if(data.alive){
+                        $("#"+data.id+"_status").html("Alive");
+                    }else{
+                        $("#"+data.id+"_status").html("Dead");
+                    }
+                });
+            })
+        });

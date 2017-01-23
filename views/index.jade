@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to IMDB Dead Or Alive
+  form(name="findCast", method="get", action="actors")
+          div.input
+              div
+                p Search by IMDB ID (you can find this in the URL after "title" part.
+                p e.g for a film with URL of http://www.imdb.com/title/tt0084987, the ID is tt0084987)
+                p if the film has a lot of actors in it (e.g. a long running series) this may take some time
+              div
+                input(type="text", name="imdbId", placeholder="IMDB film or TV Show ID")
+                input(type="submit" value="submit")
