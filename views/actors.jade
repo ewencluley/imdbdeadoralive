@@ -2,25 +2,42 @@ extends layout
 
 block content
     table
+        tr
+            th Actor
+            th Character
+            th
+                div
+                    img(src='/images/dead.svg')
+                    span or
+                    img(src='/images/alive.svg')
         - each actor in actors
             tr
                 td
-                    a(href="http://www.imdb.com/name/"+actor.id, id=actor.id)
+                    a(href="http://www.imdb.com/name/" + actor.id, id=actor.id)
                         = actor.name
-                td(id=actor.id+"_status") Pending
+                td
+                    = actor.character
+                td(id=actor.id + "_status")
 
-
+    style(type='text/css').
+        td img, th img {
+            height:20px;
+            width:20px
+        }
     script.
-        window.addEventListener('load', function(){
-            $('a').each(function(){
+        window.addEventListener('load', function () {
+            $('a').each(function () {
                 var id = this.id;
+                var opts = {position:"relative", scale:0.4, left:'30px'};
+                var spinner = new Spinner(opts).spin();
+                $("#" + id + "_status").append(spinner.el)
                 $.ajax({
-                    url: "actors/"+id
+                    url: "actors/" + id
                 }).done(function (data) {
-                    if(data.alive){
-                        $("#"+data.id+"_status").html("Alive");
-                    }else{
-                        $("#"+data.id+"_status").html("Dead");
+                    if (data.alive) {
+                        $("#" + data.id + "_status").html('<img src="/images/alive.svg"/>Alive');
+                    } else {
+                        $("#" + data.id + "_status").html('<img src="/images/dead.svg"/>Dead');
                     }
                 });
             })

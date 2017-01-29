@@ -10,17 +10,42 @@ router.get('/', function(req, res, next) {
   request.get("http://www.imdb.com/title/" + imdbId + "/fullcredits", function (error, response, body) {
       $ = cheerio.load(body);
       var actors = [];
-      $('.cast_list .itemprop a').map(function(i, actorHtml) {
-          var url = actorHtml.attribs.href;
-          var actorIdRx = /\/name\/([A-Za-z0-9]+)\/?/g;
-          var id = actorIdRx.exec(url)[1];
-          var name;
-          actorHtml.children.forEach(function(item, index){
-              if(item.name == "span"){
-                  name = item.children[0].data;
+      $('.cast_list tr').map(function(i, actorRow) {
+          if(i > 0){
+              var url, name, imgSrc, character, id;
+              var actorHtml = cheerio.load(actorRow);
+              var actorImg = actorHtml('td.primary_photo img')[0];
+              if(actorImg && actorImg.attribs.src){
+                  imgSrc = actorImg.attribs.src;
               }
-          });
-          actors.push({id: id, name: name});
+              var characterDetails = actorHtml('td.character div')[0];
+              if(characterDetails &&
+                  characterDetails.children &&
+                  characterDetails.children[1] &&
+                  characterDetails.children[1].children &&
+                  characterDetails.children[1].children[0] &&
+                  characterDetails.children[1].children[0].data){
+                        character = characterDetails.children[1].children[0].data;
+              }else if( characterDetails &&
+                        characterDetails.children &&
+                        characterDetails.children[0] &&
+                        characterDetails.children[0].data){
+                  character = characterDetails.children[0].data;
+              }
+
+              var actorDetails = actorHtml('td.itemprop a')[0];
+              if(actorDetails && actorDetails.attribs.href){
+                  url = actorDetails.attribs.href;
+                  var actorIdRx = /\/name\/([A-Za-z0-9]+)\/?/g;
+                  id = actorIdRx.exec(url)[1];
+                  actorDetails.children.forEach(function(item, index){
+                      if(item.name == "span"){
+                          name = item.children[0].data;
+                      }
+                  });
+                  actors.push({id: id, name: name, image: imgSrc, character: character});
+              }
+          }
       });
       res.render('actors', { actors: actors });
   });
