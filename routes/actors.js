@@ -9,7 +9,12 @@ router.get('/', function(req, res, next) {
   var imdbId = req.query.imdbId;
   request.get("http://www.imdb.com/title/" + imdbId + "/fullcredits", function (error, response, body) {
       $ = cheerio.load(body);
+      var title = {};
       var actors = [];
+      if($('.subpage_title_block div h3 a')[0] &&
+            $('.subpage_title_block div h3 a')[0].children[0].data){
+          title.name = $('.subpage_title_block div h3 a')[0].children[0].data;
+      }
       $('.cast_list tr').map(function(i, actorRow) {
           if(i > 0){
               var url, name, imgSrc, character, id;
@@ -47,7 +52,8 @@ router.get('/', function(req, res, next) {
               }
           }
       });
-      res.render('actors', { actors: actors });
+      title.actors = actors;
+      res.render('actors', title);
   });
 });
 
