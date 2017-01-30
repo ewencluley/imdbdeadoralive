@@ -19,7 +19,7 @@ block content
                         = actor.name
                 td
                     = actor.character
-                td(id=actor.id + "_status")
+                td(id=actor.id + "_status") Checking...
 
     style(type='text/css').
         td img, th img {
@@ -30,9 +30,9 @@ block content
         window.addEventListener('load', function () {
             $('a').each(function () {
                 var id = this.id;
-                var opts = {position:"relative", scale:0.4, left:'30px'};
-                var spinner = new Spinner(opts).spin();
-                $("#" + id + "_status").append(spinner.el)
+                //var opts = {position:"relative", scale:0.4, left:'30px'};
+                //var spinner = new Spinner(opts).spin();
+                //$("#" + id + "_status").append(spinner.el)
                 $.ajax({
                     url: "actors/" + id
                 }).done(function (data) {
